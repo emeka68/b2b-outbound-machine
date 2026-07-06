@@ -179,7 +179,7 @@ Each CSV retains all previous data + new columns, so you can inspect the enrichm
 - Campaign recommendation: DPP vs B2B_Commerce
 
 #### **personalizer.py** — AI Personalization
-- OpenAI GPT-3.5 integration for dynamic copy
+- OpenAI Chat Completions integration (default `gpt-4o-mini`) for dynamic copy
 - Two campaign templates (DPP + Commerce)
 - Fallback template-based personalization (no API)
 - Error handling with graceful degradation
@@ -215,11 +215,12 @@ Understanding this code = understanding Clay's value proposition.
 
 ### With API Key ✅
 
-If you set `OPENAI_API_KEY` in `.env`, the personalizer uses OpenAI's GPT-3.5 for dynamic icebreakers:
+If you set `OPENAI_API_KEY` in `.env`, the personalizer uses OpenAI's Chat Completions API for dynamic icebreakers:
 
 ```python
 # .env
 OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini  # optional, this is the default
 ```
 
 Cost: ~$0.001 per 1000 tokens (~$0.10 per 100 leads)

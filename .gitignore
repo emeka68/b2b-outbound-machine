@@ -48,6 +48,8 @@ enriched_*.csv
 scored_*.csv
 personalized_*.csv
 lemlist_import_*.csv
+# ...but keep the committed sample template
+!sample_leads.csv
 
 # Logs
 *.log

@@ -12,6 +12,10 @@ import os
 import logging
 from typing import Dict, Optional
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -32,14 +36,27 @@ class EmailPersonalizer:
         If no key provided, falls back to template-based mode.
         """
         self.api_key = api_key or os.getenv('OPENAI_API_KEY')
+        self.model = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
         self.use_api = OPENAI_AVAILABLE and bool(self.api_key)
-        
+
         if self.use_api:
             self.client = OpenAI(api_key=self.api_key)
-            logger.info("OpenAI API initialized. Using AI-powered personalization.")
+            logger.info(f"OpenAI API initialized (model={self.model}). Using AI-powered personalization.")
         else:
             logger.info("No OpenAI API key found. Using template-based fallback mode.")
     
+    @staticmethod
+    def _clean(value, default: str) -> str:
+        """Coerce missing/NaN/placeholder values to a sensible default.
+
+        pandas reads empty CSV cells as float NaN, so ``dict.get(key, default)``
+        returns NaN (not the default) and renders as the literal string "nan".
+        """
+        text = str(value).strip()
+        if not text or text.lower() in ('nan', 'none', 'n/a', 'unknown'):
+            return default
+        return text
+
     def generate_dpp_icebreaker_ai(self, row: Dict) -> str:
         """
         Generate DPP campaign icebreaker using OpenAI.
@@ -69,12 +86,12 @@ Write a personalized, engaging icebreaker that:
 Return ONLY the icebreaker text, no additional commentary."""
         
         try:
-            response = self.client.messages.create(
-                model="gpt-3.5-turbo",
+            response = self.client.chat.completions.create(
+                model=self.model,
                 max_tokens=150,
                 messages=[{"role": "user", "content": prompt}]
             )
-            return response.content[0].text.strip()
+            return response.choices[0].message.content.strip()
         except Exception as e:
             logger.warning(f"OpenAI API failed for {company}: {str(e)}. Using fallback.")
             return self.generate_dpp_icebreaker_fallback(row)
@@ -83,16 +100,18 @@ Return ONLY the icebreaker text, no additional commentary."""
         """
         Template-based DPP icebreaker (no API).
         """
-        company = row.get('company', 'your company')
-        signals = row.get('signals_found', 'sustainability initiatives')
-        
+        company = self._clean(row.get('company'), 'your company')
+        signals = self._clean(row.get('signals_found'), 'sustainability')
+        industry = self._clean(row.get('industry'), 'brands')
+        primary_signal = signals.split(',')[0]
+
         templates = [
-            f"We noticed {company} is focused on {signals.split(',')[0] if signals else 'sustainability'}. "
-            f"With EU's Digital Product Passport mandate coming, we're helping {row.get('industry', 'brands')} build compliance-ready systems.",
-            
-            f"Saw that {company} is tracking {signals.split(',')[0] if signals else 'product data'}. "
+            f"We noticed {company} is focused on {primary_signal}. "
+            f"With EU's Digital Product Passport mandate coming, we're helping {industry} build compliance-ready systems.",
+
+            f"Saw that {company} is tracking {primary_signal}. "
             f"Our DPP solutions automate compliance and unlock competitive advantages.",
-            
+
             f"{company} is positioned perfectly for DPP. We help manufacturers like you implement passport systems that reduce time-to-compliance by 60%.",
         ]
         
@@ -125,12 +144,12 @@ Write a personalized, engaging icebreaker that:
 Return ONLY the icebreaker text, no additional commentary."""
         
         try:
-            response = self.client.messages.create(
-                model="gpt-3.5-turbo",
+            response = self.client.chat.completions.create(
+                model=self.model,
                 max_tokens=150,
                 messages=[{"role": "user", "content": prompt}]
             )
-            return response.content[0].text.strip()
+            return response.choices[0].message.content.strip()
         except Exception as e:
             logger.warning(f"OpenAI API failed for {company}: {str(e)}. Using fallback.")
             return self.generate_commerce_icebreaker_fallback(row)
@@ -139,16 +158,17 @@ Return ONLY the icebreaker text, no additional commentary."""
         """
         Template-based Commerce icebreaker (no API).
         """
-        company = row.get('company', 'your company')
-        tech_stack = row.get('tech_stack', 'legacy systems')
-        
+        company = self._clean(row.get('company'), 'your company')
+        tech_stack = self._clean(row.get('tech_stack'), 'legacy systems')
+        industry = self._clean(row.get('industry'), 'companies')
+
         templates = [
             f"We spotted {company} running {tech_stack}. Modern B2B buyers expect seamless integrations and APIs. "
-            f"We help {row.get('industry', 'companies')} migrate to flexible platforms in weeks, not months.",
-            
+            f"We help {industry} migrate to flexible platforms in weeks, not months.",
+
             f"{company} has the growth but {tech_stack} is holding you back. Our modernization approach keeps your data intact while unlocking 10x faster deployments.",
-            
-            f"Most {row.get('industry', 'B2B')} teams using {tech_stack} are losing deals to faster, more flexible competitors. "
+
+            f"Most {industry} teams using {tech_stack} are losing deals to faster, more flexible competitors. "
             f"Let's talk about a migration that pays for itself.",
         ]
         
