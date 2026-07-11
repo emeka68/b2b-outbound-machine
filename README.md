@@ -2,7 +2,15 @@
 
 A **production-ready Python CLI tool** that replicates [Clay.com](https://clay.com)'s B2B outbound automation workflows. Enrich leads → Score buying signals → Generate personalized icebreakers → Export to Lemlist.
 
-**Built as a portfolio piece** to land Clay/Lemlist automation jobs on Upwork.
+---
+
+## Use Cases
+
+- **Self-hosted Clay.com alternative** — run the same enrich/score/personalize workflow without per-seat SaaS fees.
+- **DPP compliance prospecting** — surface manufacturers, wholesalers, and logistics companies that need EU Digital Product Passport readiness.
+- **Commerce modernization outreach** — identify companies running legacy platforms (Magento, WooCommerce, PrestaShop, SAP) that are due for an upgrade.
+- **Lead enrichment pipeline** — turn a bare list of company domains into scored, prioritized, personalized leads ready for a cold email tool.
+- **Agency/consulting tooling** — a starting point for building client-specific outbound automation on top of a working pipeline.
 
 ---
 
@@ -413,7 +421,7 @@ We've already added `.env` to `.gitignore` in the git repo.
 
 ## Contributing
 
-This is a portfolio project. Feel free to fork and customize for your own use case.
+Feel free to fork and customize for your own use case.
 
 **Suggested enhancements:**
 - [ ] Database persistence (SQLite, PostgreSQL)
@@ -430,7 +438,6 @@ This is a portfolio project. Feel free to fork and customize for your own use ca
 
 **Author:** Nnaemeka Duru  
 **Email:** emekaduru09@gmail.com  
-**Purpose:** Portfolio piece for Clay.com/Lemlist automation consulting  
 **License:** MIT (feel free to use, modify, sell services built on this)
 
 ---
@@ -441,12 +448,6 @@ This is a portfolio project. Feel free to fork and customize for your own use ca
 - Check the troubleshooting section above
 - Review logs (each step logs to console)
 - Test with `sample_leads.csv` first
-
-**Want to use this professionally?**
-- Reference this in job applications
-- Link to the GitHub repo as proof of skill
-- Customize for client use cases
-- Pitch as "Clay.com alternative for cost-conscious teams"
 
 ---
 
